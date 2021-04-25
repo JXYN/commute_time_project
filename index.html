@@ -24,11 +24,11 @@
     <body>
         <h1>Commute Time Simulation</h1>
         <p>
-            If a city has the a population of <input id="population" type="number" step="100" value ="8000"> 
+            If a city has the a population of <input id="population" type="number" step="1000" value ="30000"> 
             on average it will take a car <span class="red" id="averageCar"> </span> minutes to commute from home to work. 
             <button id="button" type="button">Simulate!</button>
         </p>
-        <canvas id="graph" width="900" height="900"></canvas>
+        <canvas id="graph" width="400" height="800"></canvas>
         <p>
             <a href="https://">source 1</a>
         </p>
@@ -40,17 +40,18 @@
             const averageCar = document.getElementById("averageCar");
             var blocks = [];
             var cars = [];
-            const block_len = 30;
+            const block_x = 15;
+            const block_y = 100;
             var time = 0;
             const stop_spawn = 120;
             var intervalId = null; 
 
             class Car {
                 constructor() {
-                    this.x_init = Math.floor(Math.random() * block_len)  ;
-                    this.y_init = Math.floor(Math.random() * block_len) ;
-                    this.x_end = Math.floor(Math.random() * block_len) ;
-                    this.y_end = Math.floor(Math.random() * block_len);
+                    this.x_init = Math.floor(Math.random() * block_x)  ;
+                    this.y_init = Math.floor(Math.random() * block_y) ;
+                    this.x_end = Math.floor(Math.random() * block_x) ;
+                    this.y_end = Math.floor(Math.random() * block_y);
                     this.commute_time = 0;
                     this.spawn_time = Math.floor(Math.random() * stop_spawn);
                     this.move_time = this.spawn_time;
@@ -72,9 +73,9 @@
 
             function renewBlock () {
                 blocks = [];
-                for(var i = 0; i < block_len; i++) {
+                for(var i = 0; i < block_x; i++) {
                     blocks.push([]);
-                    for(var j = 0; j < block_len; j++) {
+                    for(var j = 0; j < block_y; j++) {
                         blocks[i].push(0);
                     }
                 }
@@ -85,7 +86,8 @@
 
             const width = canvas.width;
             const height = canvas.height;
-            const block_width = height/block_len;
+            const block_width = width/block_x;
+            const block_height = height/block_y;
                 
             ctx.clearRect(0,0,width,height);
             ctx.fillStyle = '#000000';
@@ -104,14 +106,17 @@
                     }
                 } 
 
-                for(var i = 0; i < block_len; i++) {
-                    for(var j = 0; j < block_len; j++) {
+                for(var i = 0; i < block_x; i++) {
+                    for(var j = 0; j < block_y; j++) {
                         if(blocks[i][j] == 0 ) {
                             ctx.fillStyle = '#ffffff';
-                            ctx.fillRect(i*block_width,j*block_width,0.9*block_width,0.9*block_width);
+                            // ctx.fillRect(i*block_width,j*block_width,0.9*block_width,0.9*block_width);
+                            ctx.fillRect((i+0.45)*block_width,j*block_height,0.1*block_width,block_height);
+                            ctx.fillRect(i*block_width,(j+0.45)*block_height,block_width,0.1*block_height);
                         } else {
-                            ctx.fillStyle = rgbToHex(255,Math.floor(ReLu(255*(1-blocks[i][j]*block_len*block_len/cars.length))),Math.floor(ReLu(255*(1-blocks[i][j]*block_len*block_len/cars.length))));
-                            ctx.fillRect(i*block_width,j*block_width,0.9*block_width,0.9*block_width);
+                            ctx.fillStyle = rgbToHex(255,Math.floor(ReLu(255*(1-blocks[i][j]*block_x*block_y/cars.length))),Math.floor(ReLu(255*(1-blocks[i][j]*block_x*block_y/cars.length))));
+                            ctx.fillRect((i+0.45)*block_width,j*block_height,0.1*block_width,block_height);
+                            ctx.fillRect(i*block_width,(j+0.45)*block_height,block_width,0.1*block_height);
                         }
                     }
                 }
@@ -157,7 +162,7 @@
 
             function traffic(i,j)  {
                 var b = blocks[i][j];
-                return Math.floor((b)/2) + 1;
+                return Math.floor((b)/10) + 1;
             }
 
             function arriveX(car) {
@@ -177,7 +182,7 @@
                 for (var i = 0; i < cars.length; i++) {
                     sum = sum + cars[i].commute_time;
                 }
-                return sum/cars.length;
+                return sum/cars.length/2;
             }
 
             function update () {

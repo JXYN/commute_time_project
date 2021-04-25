@@ -5,7 +5,7 @@
         <title>Commute Time</title>
         <style>
             /* This is CSS */
-            body {
+            body { 
                 color:#FFF;
                 background: rgb(58, 58, 58);
                 font-size:120%;
@@ -27,18 +27,6 @@
             If a city has the a population of <input id="population" type="number" step="100" value ="8000"> 
             on average it will take a car <span class="red" id="averageCar"> </span> minutes to commute from home to work. 
             <button id="button" type="button">Simulate!</button>
-        </p>
-        <p>
-            88 percent of forest fires are directly caused by humans.
-        </p>
-        <p>
-            How to prevent forest fires:
-            <ul>
-                <li>Obey local laws regarding open fires</li>
-                <li>Keep flammable objects away from fire </li>
-                <li>Have firefighting tools nearby before starting fire</li>
-                <li>Drown all fire</li>
-            </ul>
         </p>
         <canvas id="graph" width="900" height="900"></canvas>
         <p>
@@ -108,7 +96,13 @@
             function display() {
                 var maxRow = blocks.map(function(row){ return Math.max.apply(Math, row); });
                 var max = Math.max.apply(null, maxRow);
-
+                function ReLu(x) {
+                    if(x <0) {
+                        return 0;
+                    } else {
+                        return x;
+                    }
+                } 
 
                 for(var i = 0; i < block_len; i++) {
                     for(var j = 0; j < block_len; j++) {
@@ -116,8 +110,7 @@
                             ctx.fillStyle = '#ffffff';
                             ctx.fillRect(i*block_width,j*block_width,0.9*block_width,0.9*block_width);
                         } else {
-                            // Gloria, please make this prettier
-                            ctx.fillStyle = rgbToHex(255,Math.floor(255*(1-blocks[i][j]/max)),Math.floor(255*(1-blocks[i][j]/max)));
+                            ctx.fillStyle = rgbToHex(255,Math.floor(ReLu(255*(1-blocks[i][j]*block_len*block_len/cars.length))),Math.floor(ReLu(255*(1-blocks[i][j]*block_len*block_len/cars.length))));
                             ctx.fillRect(i*block_width,j*block_width,0.9*block_width,0.9*block_width);
                         }
                     }

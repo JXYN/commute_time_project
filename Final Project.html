@@ -1,0 +1,235 @@
+<!doctttype html>
+<html>
+    <head>
+        <meta charset="utf8">
+        <title>Commute Time</title>
+        <style>
+            /* This is CSS */
+            body {
+                color:#FFF;
+                background: rgb(58, 58, 58);
+                font-size:120%;
+            }
+            .red {
+                color: #df0000;
+            }
+            .green { /* OK, a bit contrived... */
+                color: #00df00;
+            }
+            .bigger { 
+                font-size:200%;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Commute Time Simulation</h1>
+        <p>
+            If a city has the a population of <input id="population" type="number" step="100" value ="8000"> 
+            on average it will take a car <span class="red" id="averageCar"> </span> minutes to commute from home to work. 
+            <button id="button" type="button">Simulate!</button>
+        </p>
+        <p>
+            88 percent of forest fires are directly caused by humans.
+        </p>
+        <p>
+            How to prevent forest fires:
+            <ul>
+                <li>Obey local laws regarding open fires</li>
+                <li>Keep flammable objects away from fire </li>
+                <li>Have firefighting tools nearby before starting fire</li>
+                <li>Drown all fire</li>
+            </ul>
+        </p>
+        <canvas id="graph" width="900" height="900"></canvas>
+        <p>
+            <a href="https://">source 1</a>
+        </p>
+        <script>
+            "use strict";
+            const button = document.getElementById("button");
+            const populationButton = document.getElementById("population");
+            var population = populationButton.value;
+            const averageCar = document.getElementById("averageCar");
+            var blocks = [];
+            var cars = [];
+            const block_len = 30;
+            var time = 0;
+            const stop_spawn = 120;
+            var intervalId = null; 
+
+            class Car {
+                constructor() {
+                    this.x_init = Math.floor(Math.random() * block_len)  ;
+                    this.y_init = Math.floor(Math.random() * block_len) ;
+                    this.x_end = Math.floor(Math.random() * block_len) ;
+                    this.y_end = Math.floor(Math.random() * block_len);
+                    this.commute_time = 0;
+                    this.spawn_time = Math.floor(Math.random() * stop_spawn);
+                    this.move_time = this.spawn_time;
+                    this.arrived = false;
+                }
+            }
+
+
+            
+            function componentToHex(c) {
+                var hex = c.toString(16);
+                return hex.length == 1 ? "0" + hex : hex;
+            }
+
+            function rgbToHex(r, g, b) {
+                return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+            }
+
+
+            function renewBlock () {
+                blocks = [];
+                for(var i = 0; i < block_len; i++) {
+                    blocks.push([]);
+                    for(var j = 0; j < block_len; j++) {
+                        blocks[i].push(0);
+                    }
+                }
+            }
+
+            const canvas = document.getElementById("graph");
+            const ctx = canvas.getContext('2d');
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const block_width = height/block_len;
+                
+            ctx.clearRect(0,0,width,height);
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0,0,width,height);
+
+
+
+            function display() {
+                var maxRow = blocks.map(function(row){ return Math.max.apply(Math, row); });
+                var max = Math.max.apply(null, maxRow);
+
+
+                for(var i = 0; i < block_len; i++) {
+                    for(var j = 0; j < block_len; j++) {
+                        if(blocks[i][j] == 0 ) {
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(i*block_width,j*block_width,0.9*block_width,0.9*block_width);
+                        } else {
+                            // Gloria, please make this prettier
+                            ctx.fillStyle = rgbToHex(255,Math.floor(255*(1-blocks[i][j]/max)),Math.floor(255*(1-blocks[i][j]/max)));
+                            ctx.fillRect(i*block_width,j*block_width,0.9*block_width,0.9*block_width);
+                        }
+                    }
+                }
+            }
+
+            function init (){
+                time = 0;
+                cars = [];
+                intervalId = null;
+                population = populationButton.value;
+                renewBlock();
+                for(var c = 0; c < population; c++) {
+                    const driver = new Car();
+                    cars.push(driver);
+                }
+            }
+           
+            function terminate() {
+
+                for (var i = 0; i < cars.length; i++) {
+                    if (cars[i].arrived == false) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function move(car) {
+                if(!arriveX(car)) {
+                    if(car.x_end < car.x_init) {
+                        car.x_init--;
+                    } else {
+                        car.x_init++;
+                    }
+                } else if (!arriveY(car)) {
+                    if(car.y_end < car.y_init) {
+                        car.y_init--;
+                    } else {
+                        car.y_init++;
+                    }
+                }
+            }
+
+            function traffic(i,j)  {
+                var b = blocks[i][j];
+                return Math.floor((b)/2) + 1;
+            }
+
+            function arriveX(car) {
+                return car.x_init == car.x_end;
+            }
+
+            function arriveY(car) {
+                return car.y_init == car.y_end;
+            }
+            
+            function arrived(car) {
+                return arriveX(car) && arriveY(car);
+            }
+
+            function findCarCommuteTime() {
+                var sum = 0;
+                for (var i = 0; i < cars.length; i++) {
+                    sum = sum + cars[i].commute_time;
+                }
+                return sum/cars.length;
+            }
+
+            function update () {
+                    if (terminate()) {
+                        
+                        averageCar.innerText = parseFloat(findCarCommuteTime()).toFixed(2);
+                        clearInterval(intervalId);
+                    }
+                    else{
+                        for(var i = 0; i < cars.length; i++) {
+                            if (cars[i].spawn_time == time) {
+                                if(!arrived(cars[i])) {
+                                    cars[i].move_time = cars[i].move_time + traffic(cars[i].x_init, cars[i].y_init);
+                                    cars[i].commute_time = cars[i].commute_time + traffic(cars[i].x_init, cars[i].y_init);
+                                    blocks[cars[i].x_init][cars[i].y_init]++;
+                                } else {
+                                    cars[i].arrived = true;
+                                }
+                            } else if (cars[i].move_time == time ) {
+                                blocks[cars[i].x_init][cars[i].y_init]--;
+                                move(cars[i]);
+                                if(!arrived(cars[i])) {
+                                    cars[i].move_time = cars[i].move_time + traffic(cars[i].x_init, cars[i].y_init);
+                                    cars[i].commute_time = cars[i].commute_time + traffic(cars[i].x_init, cars[i].y_init);
+                                    blocks[cars[i].x_init][cars[i].y_init]++;
+                                } else {
+                                    cars[i].arrived = true;
+                                }
+                                
+                            }
+                        }
+                        time++;
+                        display();
+                    }
+            }
+
+            function simulate () {
+                init();
+                intervalId = setInterval(update, 100);
+                
+            }
+
+            button.addEventListener("click", simulate);
+
+
+        </script>
+    </body>    
+</html>

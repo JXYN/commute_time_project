@@ -24,8 +24,15 @@
     <body>
         <h1>Commute Time Simulation</h1>
         <p>
-            If a city has the a population of <input id="population" type="number" step="1000" value ="30000"> 
-            on average it will take a car <span class="red" id="averageCar"> </span> minutes to commute from home to work. 
+            If a city has a population density <input id="population" type="number" step="1000" value ="30000" max = "100000" min = "1"> people per square mile, 
+            <input id="carper" type="number" step="1" value ="90" max = "100" min = "0">% poeple commute by car.
+            <input id="busper" type="number" step="1" value ="5" max = "100" min = "0">% people commute by bus.
+            <input id="walkper" type="number" step="1" value ="5" max = "100" min = "0">% people commute by foot.
+            On average it will take 
+            a car <span class="red" id="averageCar"> </span> minutes, 
+            a bus <span class="red" id="averageBus"> </span> minutes, and 
+            a pedestrian <span class="red" id="averageWalk"> </span> minutes 
+            to commute from home to work. 
             <button id="button" type="button">Simulate!</button>
         </p>
         <canvas id="graph" width="400" height="800"></canvas>
@@ -37,9 +44,21 @@
             const button = document.getElementById("button");
             const populationButton = document.getElementById("population");
             var population = populationButton.value;
+            
+            const carperButton = document.getElementById("carper");
+            var carper = carperButton.value;
+            const walkperButton = document.getElementById("walkper");
+            var walkper = walkperButton.value;
+            const busperButton = document.getElementById("busper");
+            var busper = busperButton.value;
+
             const averageCar = document.getElementById("averageCar");
+            const averageBus = document.getElementById("averageBus");
+            const averageWalk = document.getElementById("averageWalk");
             var blocks = [];
             var cars = [];
+            var bus  = [];
+            var walk = [];
             const block_x = 15;
             const block_y = 100;
             var time = 0;
@@ -59,6 +78,31 @@
                 }
             }
 
+            class Bus {
+                constructor() {
+                    this.x_init = Math.floor(Math.random() * block_x)  ;
+                    this.y_init = Math.floor(Math.random() * block_y) ;
+                    this.x_end = Math.floor(Math.random() * block_x) ;
+                    this.y_end = Math.floor(Math.random() * block_y);
+                    this.commute_time = 0;
+                    this.spawn_time = Math.floor(Math.random() * stop_spawn);
+                    this.move_time = this.spawn_time;
+                    this.arrived = false;
+                }
+            }
+
+            class Walk {
+                constructor() {
+                    this.x_init = Math.floor(Math.random() * block_x)  ;
+                    this.y_init = Math.floor(Math.random() * block_y) ;
+                    this.x_end = Math.floor(Math.random() * block_x) ;
+                    this.y_end = Math.floor(Math.random() * block_y);
+                    this.commute_time = 0;
+                    this.spawn_time = Math.floor(Math.random() * stop_spawn);
+                    this.move_time = this.spawn_time;
+                    this.arrived = false;
+                }
+            }
 
             
             function componentToHex(c) {
@@ -120,17 +164,39 @@
                         }
                     }
                 }
+                for (var b = 0; b < bus.length; b++) {
+                    if (!bus[b].arrived && bus[b].spawn_time < time) {
+                        var i = bus[b].x_init;
+                        var j = bus[b].y_init;
+                        ctx.fillStyle = '#0000ff';
+                        ctx.fillRect((i+0.45)*block_width,j*block_height,0.1*block_width,block_height);
+                        ctx.fillRect(i*block_width,(j+0.45)*block_height,block_width,0.1*block_height);
+                    }
+                }
             }
 
             function init (){
                 time = 0;
                 cars = [];
+                bus = [];
+                walk = [];
                 intervalId = null;
                 population = populationButton.value;
+                carper = carperButton.value;
+                busper = busperButton.value;
+                walkper = walkperButton.value;
                 renewBlock();
-                for(var c = 0; c < population; c++) {
+                for(var c = 0; c < Math.floor(population * carper / 100); c++) {
                     const driver = new Car();
                     cars.push(driver);
+                }
+                for(var c = 0; c < Math.floor(population * busper / 100 / 40); c++) {
+                    const busDriver = new Bus();
+                    bus.push(busDriver);
+                }
+                for(var c = 0; c < Math.floor(population * walkper / 100); c++) {
+                    const walker = new Walk();
+                    walk.push(walker);
                 }
             }
            
@@ -138,6 +204,16 @@
 
                 for (var i = 0; i < cars.length; i++) {
                     if (cars[i].arrived == false) {
+                        return false;
+                    }
+                }
+                for (var i = 0; i < bus.length; i++) {
+                    if (bus[i].arrived == false) {
+                        return false;
+                    }
+                }
+                for (var i = 0; i < walk.length; i++) {
+                    if (walk[i].arrived == false) {
                         return false;
                     }
                 }
@@ -177,18 +253,33 @@
                 return arriveX(car) && arriveY(car);
             }
 
-            function findCarCommuteTime() {
+            function findCarCommuteTime() { 
                 var sum = 0;
                 for (var i = 0; i < cars.length; i++) {
                     sum = sum + cars[i].commute_time;
                 }
                 return sum/cars.length/2;
             }
+            function findBusCommuteTime() { 
+                var sum = 0;
+                for (var i = 0; i < bus.length; i++) {
+                    sum = sum + bus[i].commute_time;
+                }
+                return sum/bus.length/2+10;
+            }
+            function findWalkCommuteTime() { 
+                var sum = 0;
+                for (var i = 0; i < walk.length; i++) {
+                    sum = sum + walk[i].commute_time;
+                }
+                return sum/walk.length/2*4;
+            }
 
             function update () {
                     if (terminate()) {
-                        
                         averageCar.innerText = parseFloat(findCarCommuteTime()).toFixed(2);
+                        averageBus.innerText = parseFloat(findBusCommuteTime()).toFixed(2);
+                        averageWalk.innerText = parseFloat(findWalkCommuteTime()).toFixed(2);
                         clearInterval(intervalId);
                     }
                     else{
@@ -214,6 +305,49 @@
                                 
                             }
                         }
+                        for(var i = 0; i < bus.length; i++) {
+                            if (bus[i].spawn_time == time) {
+                                if(!arrived(bus[i])) {
+                                    bus[i].move_time = bus[i].move_time + traffic(bus[i].x_init, bus[i].y_init);
+                                    bus[i].commute_time = bus[i].commute_time + traffic(bus[i].x_init, bus[i].y_init);
+                                    blocks[bus[i].x_init][bus[i].y_init]++;
+                                } else {
+                                    bus[i].arrived = true;
+                                }
+                            } else if (bus[i].move_time == time ) {
+                                blocks[bus[i].x_init][bus[i].y_init]--;
+                                move(bus[i]);
+                                if(!arrived(bus[i])) {
+                                    bus[i].move_time = bus[i].move_time + traffic(bus[i].x_init, bus[i].y_init);
+                                    bus[i].commute_time = bus[i].commute_time + traffic(bus[i].x_init, bus[i].y_init);
+                                    blocks[bus[i].x_init][bus[i].y_init]++;
+                                } else {
+                                    bus[i].arrived = true;
+                                }
+                                
+                            }
+                        }
+
+                        for(var i = 0; i < walk.length; i++) {
+                            if (walk[i].spawn_time == time) {
+                                if(!arrived(walk[i])) {
+                                    walk[i].move_time = walk[i].move_time + 1;
+                                    walk[i].commute_time = walk[i].commute_time + 1;
+                                } else {
+                                    walk[i].arrived = true;
+                                }
+                            } else if (walk[i].move_time == time ) {
+                                move(walk[i]);
+                                if(!arrived(walk[i])) {
+                                    walk[i].move_time = walk[i].move_time + 1;
+                                    walk[i].commute_time = walk[i].commute_time + 1;
+                                } else {
+                                    walk[i].arrived = true;
+                                }
+                                
+                            }
+                        }
+
                         time++;
                         display();
                     }
@@ -221,7 +355,7 @@
 
             function simulate () {
                 init();
-                intervalId = setInterval(update, 100);
+                intervalId = setInterval(update, 40 * (30000 / population));
                 
             }
 

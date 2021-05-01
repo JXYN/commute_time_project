@@ -1,11 +1,11 @@
-<!doctttype html>
+<!doctype html>
 <html>
     <head>
         <meta charset="utf8">
         <title>Commute Time</title>
         <style>
             /* This is CSS */
-            body { 
+            body {
                 color:#FFF;
                 background: rgb(58, 58, 58);
                 font-size:120%;
@@ -16,26 +16,53 @@
             .green { /* OK, a bit contrived... */
                 color: #00df00;
             }
-            .bigger { 
+            .bigger {
                 font-size:200%;
             }
+
+            .column-left {
+              float: left;
+              padding-left: 30px;
+              padding-right: 30px;
+            }
+            .column-right {
+              float: right;
+              padding-left: 30px;
+              padding-right: 30px;
+            }
+
+          }
+
         </style>
     </head>
     <body>
         <h1>Commute Time Simulation</h1>
         <p>
-            If a city has a population density <input id="population" type="number" step="1000" value ="30000" max = "100000" min = "1"> people per square mile, 
+            If a city has a population density <input id="population" type="number" step="1000" value ="30000" max = "100000" min = "1"> people per square mile,
             <input id="carper" type="number" step="1" value ="90" max = "100" min = "0">% poeple commute by car.
             <input id="busper" type="number" step="1" value ="5" max = "100" min = "0">% people commute by bus.
             <input id="walkper" type="number" step="1" value ="5" max = "100" min = "0">% people commute by foot.
-            On average it will take 
-            a car <span class="red" id="averageCar"> </span> minutes, 
-            a bus <span class="red" id="averageBus"> </span> minutes, and 
-            a pedestrian <span class="red" id="averageWalk"> </span> minutes 
-            to commute from home to work. 
+            On average it will take
+            a car <span class="red" id="averageCar"> </span> minutes,
+            a bus <span class="red" id="averageBus"> </span> minutes, and
+            a pedestrian <span class="red" id="averageWalk"> </span> minutes
+            to commute from home to work.
             <button id="button" type="button">Simulate!</button>
         </p>
-        <canvas id="graph" width="400" height="800"></canvas>
+        <div class = "column-left">
+          <canvas id="graph" width="400" height="800"></canvas>
+        </div>
+        <div id = "column-right">
+          <canvas id="bar" width="400" height="400"></canvas>
+        </div>
+        <!-- <h2>Apply to Real World Data: </h2>
+        <p>Compare simulated results with the average commute time by city.
+        <br>
+        Choose City:
+        </p>
+        <div id = "column-right">
+          <canvas id="compare" width="400" height="400"></canvas>
+        </div> -->
         <p>
             <a href="https://">source 1</a>
         </p>
@@ -44,7 +71,7 @@
             const button = document.getElementById("button");
             const populationButton = document.getElementById("population");
             var population = populationButton.value;
-            
+
             const carperButton = document.getElementById("carper");
             var carper = carperButton.value;
             const walkperButton = document.getElementById("walkper");
@@ -63,7 +90,7 @@
             const block_y = 100;
             var time = 0;
             const stop_spawn = 120;
-            var intervalId = null; 
+            var intervalId = null;
 
             class Car {
                 constructor() {
@@ -104,7 +131,7 @@
                 }
             }
 
-            
+
             function componentToHex(c) {
                 var hex = c.toString(16);
                 return hex.length == 1 ? "0" + hex : hex;
@@ -132,7 +159,7 @@
             const height = canvas.height;
             const block_width = width/block_x;
             const block_height = height/block_y;
-                
+
             ctx.clearRect(0,0,width,height);
             ctx.fillStyle = '#000000';
             ctx.fillRect(0,0,width,height);
@@ -148,7 +175,7 @@
                     } else {
                         return x;
                     }
-                } 
+                }
 
                 for(var i = 0; i < block_x; i++) {
                     for(var j = 0; j < block_y; j++) {
@@ -199,7 +226,7 @@
                     walk.push(walker);
                 }
             }
-           
+
             function terminate() {
 
                 for (var i = 0; i < cars.length; i++) {
@@ -278,26 +305,26 @@
             function arriveY(car) {
                 return car.y_init == car.y_end;
             }
-            
+
             function arrived(car) {
                 return arriveX(car) && arriveY(car);
             }
 
-            function findCarCommuteTime() { 
+            function findCarCommuteTime() {
                 var sum = 0;
                 for (var i = 0; i < cars.length; i++) {
                     sum = sum + cars[i].commute_time;
                 }
                 return sum/cars.length/2;
             }
-            function findBusCommuteTime() { 
+            function findBusCommuteTime() {
                 var sum = 0;
                 for (var i = 0; i < bus.length; i++) {
                     sum = sum + bus[i].commute_time;
                 }
                 return sum/bus.length/2+10;
             }
-            function findWalkCommuteTime() { 
+            function findWalkCommuteTime() {
                 var sum = 0;
                 for (var i = 0; i < walk.length; i++) {
                     sum = sum + walk[i].commute_time;
@@ -322,6 +349,7 @@
                         } else {
                             averageWalk.innerText = "N/A";
                         }
+                        drawGraph();
                         clearInterval(intervalId);
                     }
                     else{
@@ -344,7 +372,7 @@
                                 } else {
                                     cars[i].arrived = true;
                                 }
-                                
+
                             }
                         }
                         for(var i = 0; i < bus.length; i++) {
@@ -366,7 +394,7 @@
                                 } else {
                                     bus[i].arrived = true;
                                 }
-                                
+
                             }
                         }
 
@@ -386,7 +414,7 @@
                                 } else {
                                     walk[i].arrived = true;
                                 }
-                                
+
                             }
                         }
 
@@ -398,12 +426,123 @@
             function simulate () {
                 init();
                 intervalId = setInterval(update, 40 * (30000 / population));
-                
             }
 
             button.addEventListener("click", simulate);
 
+            const canvas1 = document.getElementById('bar');
+            const ctx1 = canvas1.getContext('2d');
+            const width1 = canvas1.width;
+            const height1 = canvas1.height;
+            ctx1.fillStyle = "#000000";
+            ctx1.fillRect(0,0,width1,height1);
+
+            function drawBar(ctx, x, y, width, height, color){
+              ctx.save();
+              ctx.fillStyle=color;
+              ctx.fillRect(x,y,width,height);
+              ctx.restore();
+            }
+
+            function drawLine(ctx, x0, y0, x1, y1, color){
+              ctx.save();
+              ctx.strokeStyle = color;
+              ctx.beginPath();
+              ctx.moveTo(x0,y0);
+              ctx.lineTo(x1,y1);
+              ctx.stroke();
+              ctx.restore();
+            }
+
+            function drawText(ctx, x, y, text, color, align, size, font) {
+              ctx.save();
+              ctx.fillStyle = color;
+              ctx.textAlign = align;
+              ctx.font = String(size) + "px " + font;
+              ctx.fillText(text, x, y);
+              ctx.restore();
+            }
+
+            function drawGraph() {
+              // initialize
+              drawBar(ctx1, 0,0,width1, height1, "black");
+              // calculate variables
+              var carTime = findCarCommuteTime();
+              var busTime = findBusCommuteTime();
+              var xMax = Math.ceil(Math.max(carTime, busTime)/5) * 5;
+              var margin = width1/10;
+              var ticker = (height1 - (2*margin))/xMax;
+              // draw axis
+              drawLine(ctx1,margin, height1 - margin, margin, margin, "white");
+              drawLine(ctx1,margin, height1 - margin, width1-margin, height1-margin, "white");
+              // draw tickers
+              for (var t = 0; t <= xMax; t += 5) {
+                var y = (height1 - margin) - t*ticker;
+                if (t != 0) {
+                  drawLine(ctx1, margin, y, width1-margin, y, "grey");
+                }
+                drawText(ctx1,margin*2/3, y , String(t), "white", "center", 10, "Arial");
+              }
+              // calculate bus and bar
+              var carY = (height1 - margin) - carTime*ticker;
+              var busY = (height1 - margin) - busTime*ticker;
+              var xDif = (width1 - (2*margin))/ 7;
+              // bus Bar
+              drawBar(ctx1, margin + xDif, busY, 2*xDif, busTime*ticker, "blue");
+              drawText(ctx1,margin + 2*xDif, height1 - margin/2 , "Bus", "white", "center", 25, "Arial");
+              // car Bar
+              drawBar(ctx1, margin + 4*xDif, carY, 2*xDif, carTime*ticker, "red");
+              drawText(ctx1,margin + 5*xDif, height1 - margin/2 , "Car", "white", "center",25, "Arial");
+
+            }
+
+            // const canvas2 = document.getElementById('compare');
+            // const ctx2 = canvas2.getContext('2d');
+            // const width2 = canvas2.width;
+            // const height2 = canvas2.height;
+            // ctx2.fillStyle = "#000000";
+            // ctx2.fillRect(0,0,width2,height2);
+            //
+            // // https://www.titlemax.com/discovery-center/planes-trains-and-automobiles/100-u-s-cities-ranked-by-commute-time/
+            // const commuteTime = [36.3,34.6,32.8,32.1,32,31.6,31.4,31,30.8,30.4,
+            //   30.1,30,29.7,29.5,29.1,28.9,28.4,28.2,28.2,28.1,27.7,27.5,27.3,27.2,
+            //   27.1,26.8,26.8,26.8,26.7,26.6,26.6,26.6,26.5,26.5,26.2,26.2,26,26,
+            //   25.9,25.8,25.8,25.7,25.6,25.4,25.4,25.3,25.2,24.9,24.8,24.8,24.7,
+            //   24.6,24.5,24.5,24.5,24.4,24.3,24.1,23.9,23.9,23.8,23.7,23.7,23.7,
+            //   23.6,23.4,23.4,23.4,23.4,23.4,23.3,23.2,23.1,23.1,23.1,23,22.9,
+            //   22.9,22.8,22.8,22.7,22.5,22.4,22.4,22.4,22,21.9,21.8,21.8,21.7,
+            //   21.5,21.5,21.4,21.3,21.3,21.2,20.7,20.3,20.2,19.5];
+            //
+            // const cities =
+            // ["New York-Newark-Jersey City, NY-NJ","Washington-Arlington-Alexandria, DC-VA",
+            // "San Francisco-Oakland-Hayward, CA","Riverside-San Bernardino-Ontario, CA",
+            // "Stockton-Lodi, CA","Chicago-Naperville-Elgin, IL","Atlanta-Sandy Springs-Roswell, GA",
+            // "Boston-Cambridge-Newton, MA","Baltimore-Columbia-Towson, MD","Bridgeport-Stamford-Norwalk, CT",
+            // "Seattle-Tacoma-Bellevue, WA","Los Angeles-Long Beach-Anaheim, CA","Houston-The Woodlands-Sugar Land, TX",
+            // "Philadelphia-Camden-Wilmington, PA-NJ-DE","Urban Honolulu, HI","Miami-Fort Lauderdale-West Palm Beach, FL",
+            // "Worcester, MA","Orlando-Kissimmee-Sanford, FL","San Jose-Sunnyvale-Santa Clara, CA",
+            // "Dallas-Fort Worth-Arlington, TX","Allentown-Bethlehem-Easton, PA","Denver-Aurora-Lakewood, CO",
+            // "Nashville-Davidson-Murfreesboro-Franklin, TN","Cape Coral-Fort Myers, FL","Tampa-St. Petersburg-Clearwater, FL",
+            // "Detroit-Warren-Dearborn, MI","Austin-Round Rock, TX","Sacramento-Roseville-Arden-Arcade, CA",
+            // "Pittsburgh, PA","Portland-Vancouver-Hillsboro, OR-WA","Oxnard-Thousand Oaks-Ventura, CA",
+            // "Baton Rouge, LA","Charlotte-Concord-Gastonia, NC","Jacksonville, FL","Phoenix-Mesa-Scottsdale, AZ",
+            // "Birmingham-Hoover, AL","San Antonio-New Braunfels, TX","Lakeland-Winter Haven, FL",
+            // "Raleigh, NC","Providence-Warwick, RI","New Orleans-Metairie, LA","San Diego-Carlsbad, CA",
+            // "St. Louis, MO","Charleston-North Charleston, SC","Deltona-Daytona Beach-Ormond Beach, FL",
+            // "Minneapolis-St. Paul-Bloomington, MN","Richmond, VA","New Haven-Milford, CT","Indianapolis-Carmel-Anderson, IN",
+            // "Portland-South Portland, ME","Cincinnati, OH","Cleveland-Elyria, OH","Las Vegas-Henderson-Paradise, NV",
+            // "Tucson, AZ","North Port-Sarasota-Bradenton, FL","Jackson, MS","Virginia Beach-Norfolk-Newport News, VA",
+            // "Memphis, TN","Louisville/Jefferson County, KY","Hartford-West Hartford-East Hartford, CT",
+            // "Durham-Chapel Hill, NC","Columbus, OH","Columbia, SC","Augusta-Richmond County, GA",
+            // "Knoxville, TN","Albuquerque, NM","El Paso, TX","Akron, OH","Bakersfield, CA",
+            // "Winston-Salem, NC","Colorado Springs, CO","Chattanooga, TN","Milwaukee-Waukesha-West Allis, WI",
+            // "Albany-Schenectady-Troy, NY","Lancaster, PA","Kansas City, MO-KS","Little Rock-North Little Rock-Conway, AR",
+            // "Harrisburg-Carlisle, PA","Greenville-Anderson-Mauldin, SC","Springfield, MA","Oklahoma City, OK",
+            // "Ogden-Clearfield, UT","Salt Lake City, UT","Fresno, CA","Greensboro-High Point, NC",
+            // "Boise City, ID","McAllen-Edinburg-Mission, TX","Grand Rapids-Wyoming, MI","Scranton-Wilkes-Barre-Hazleton, PA",
+            // "Madison, WI","Buffalo-Cheektowaga-Niagara Falls, NY","Tulsa, OK","Provo-Orem, UT","Rochester, NY",
+            // "Dayton, OH","Syracuse, NY","Toledo, OH","Des Moines-West Des Moines, IA","Omaha-Council Bluffs, NE-IA","Wichita, KS"];
 
         </script>
-    </body>    
+    </body>
 </html>

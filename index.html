@@ -50,10 +50,10 @@
             <button id="button" type="button">Simulate!</button>
         </p>
         <div class = "column-left">
-          <canvas id="graph" width="400" height="400"></canvas>
+          <canvas id="graph" width="500" height="500"></canvas>
         </div>
         <div id = "column-right">
-          <canvas id="bar" width="400" height="400"></canvas>
+          <canvas id="bar" width="500" height="500"></canvas>
         </div>
         <!-- <h2>Apply to Real World Data: </h2>
         <p>Compare simulated results with the average commute time by city.
@@ -86,8 +86,8 @@
             var cars = [];
             var bus  = [];
             var walk = [];
-            const block_x = 15;
-            const block_y = 100;
+            const block_x = 70;
+            const block_y = 70;
             var time = 0;
             const stop_spawn = 120;
             var intervalId = null;
@@ -141,6 +141,12 @@
                 return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
             }
 
+            var resList = [];
+            var workList = [];
+
+            function getResList(){
+                return;
+            }
 
             function renewBlock () {
                 blocks = [];

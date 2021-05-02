@@ -8,16 +8,17 @@
             body {
                 margin: 0;
                 padding: 0;
-                color:#FFF;
-                background: rgb(58, 58, 58);
+                color:#000;
+                background: #A9A9A9;
                 font-size:120%;
             }
-            
+
             h1 {
                 margin-top: 0;
                 color:rgb(58, 58, 58);
                 background: rgb(2, 212, 166);
                 top: 0;
+                text-align: center ;
                 background-size: 100%;
             }
             h.bigger {
@@ -49,62 +50,178 @@
                 text-decoration: underline;
             }
 
+
             .column-left {
-              float: left;
-              padding-left: 30px;
-              padding-right: 30px;
+              float: right;
+
             }
             .column-right {
-              float: right;
-              padding-left: 30px;
-              padding-right: 30px;
+              margin-right: 100px;
+              float: left;
+
+            }
+
+            .picture {
+              margin: auto;
+              max-width: 40%;
+            }
+
+            .center_text {
+              position: absolute;
+              left: 50%;
+            }
+
+            a:link {
+              color: black;
+              background-color: transparent;
+              text-decoration: underline;
+            }
+
+            a:visited {
+              color: black;
+              background-color: transparent;
+              text-decoration: none;
+            }
+
+            a:hover {
+              color: black;
+              background-color: transparent;
+              text-decoration: underline;
+            }
+
+            a:active {
+              color: black;
+              background-color: transparent;
+              text-decoration: underline;
+            }
+
+            .max-width {
+              max-width: 80%;
+              margin: auto;
+            }
+            .min-width {
+              max-width: 60%;
+              margin: auto;
+            }
+
+            .graph-width {
+              max-width: 75%;
+              margin: auto;
             }
           }
 
         </style>
     </head>
     <body>
-        <h1 >
+        <h1>
             <h class ="bigger">Commute Time Simulation:</h>
-            <div>Understand how you impact other commuters</div>
+            <div>Understand how method of transporation affects commute time</div>
             <img src="commute.jpg" alt="commute">
         </h1>
+        <div class="max-width">
+        <p class = "min-width"> According to research by the <a href="https://oem.bmj.com/content/77/2/77">
+          Finnish Institute for Health and Welfare</a>, longer commute time increases
+          the risk of physical inactivity and sleep problems. Therefore, we want to
+          explore how different methods of transportation affect total average
+          commute time in a city.
+        </p>
+
         <p>
             <span class="subtitle">How our simulation works:</span><br>
-        
-            <span class="red"> Red</span> represents the the traffic in an particular intersection <br>  
+
+            <span class="red"> Red</span> represents the the traffic in an particular intersection <br>
             <span class="pink">Pink</span> represent a workplace.<br>
             <button id="simpleButton" type="button">Simulate!</button>
         </p>
-             
-        
         <p>
             <canvas id="graph_intro" width="500" height="200"></canvas>
         </p>
-        
+
+
         <p>
-            <span class="subtitle">Simulate on Your City:</span><br>
-            City Population Density: <label for="pop"></label><input id="population" type="range" min="1000" max="100000" value="30000" id="pop" 
+            <span class="subtitle">Let's explore different ratios of transporation methods:</span><br>
+            City Population Density: 30000 people per square mile <br>
+            95% poeple commute by <span class="red"> car</span> <br>
+            3% people commute by <span class="blue"> bus</span> <br>
+            2% people commute by foot <br>
+            Your commute distance:
+            <button id="button" type="button">Simulate!</button> <br>
+            <br>
+            On average it will take:
+            <br>
+            a car <span class="red" id="averageCar"> </span> minutes
+            <br>
+            a bus <span class="red" id="averageBus"> </span> minutes
+            <br>
+            a pedestrian <span class="red" id="averageWalk"> </span> minutes
+            <br>
+            to commute from home to work.
+            <br>
+            Average commuteTime for the city is <span class="red" id="averageCity"> </span> minutes
+            <br>
+        </p>
+        <div class = "graph-width">
+        <div class = "column-left">
+          <canvas id="bar" width="400" height="400"></canvas>
+        </div>
+        <div id = "column-right">
+          <canvas id="graph" width="400" height="400"></canvas>
+        </div>
+      </div>
+
+        <p>
+            <span class="subtitle">Let's see what happens when more people take the bus:</span><br>
+            City Population Density: 30000 people per square mile <br>
+            3% poeple commute by <span class="red"> car</span>  <br>
+            95% people commute by <span class="blue"> bus</span> <br>
+            2% people commute by foot <br>
+            Your commute distance:
+            <button id="button" type="button">Simulate!</button><br>
+            <br>
+            On average it will take:
+            <br>
+            a car <span class="red" id="averageCar"> </span> minutes
+            <br>
+            a bus <span class="red" id="averageBus"> </span> minutes
+            <br>
+            a pedestrian <span class="red" id="averageWalk"> </span> minutes
+            <br>
+            to commute from home to work.
+            <br>
+            Average commuteTime for the city is <span class="red" id="averageCity"> </span> minutes
+            <br>
+        </p>
+        <div class= "graph-width">
+        <div class = "column-left">
+          <canvas id="bar" width="400" height="400"></canvas>
+        </div>
+        <div id = "column-right">
+          <canvas id="graph" width="400" height="400"></canvas>
+        </div>
+      </div>
+
+
+
+        <p>
+            <span class="subtitle">Try simulating your own city:</span><br>
+            City Population Density: <label for="pop"></label><input id="population" type="range" min="1000" max="100000" value="30000" id="pop"
             step="1" oninput="outputUpdate(value)"> <output for="pop" id="pLabel">30000</output>
             people per square mile <br>
-            <input id="carper" type="number" step="1" value ="90" max = "98" min = "1">% poeple commute by car <br>
-            <input id="busper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by bus <br>
-            <input id="walkper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by foot <br>
-            Your commute distance: 
-            <input id="mainDist" type="number" step="1" value ="10" max = "20" min = "1"> miles <br>
-            Your commute method: 
+            <input id="carper" type="number" step="1" value ="90" max = "98" min = "1">% poeple commute by <span class="red"> car</span>,
+            <input id="busper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by <span class="blue"> bus</span>, and
+            <input id="walkper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by foot.
+            <br> <br>
+            <span class="green">
+            Your commute distance is
+            <input id="mainDist" type="number" step="1" value ="10" max = "20" min = "1"> miles and
+            your commute method is
             <select name="method" id="mainMethod">
                 <option value="1">Car</option>
                 <option value="2">Bus</option>
               </select><br>
+            </span>
 
             <button id="button" type="button">Simulate!</button> <br><br>
-            
-            
-            <span class="red"> Red</span> represents the the traffic in an particular intersection <br> 
-            <span class="blue"> Blue</span> represents a bus <br>   
-            <span class="pink">Pink</span> represent a workplace<br>
-            <span class="green">Green</span> is you!<br>
 
             <br>
 
@@ -114,36 +231,34 @@
             a bus <span class="red" id="averageBus"> </span> minutes, and
             a pedestrian <span class="red" id="averageWalk"> </span> minutes
             to commute from home to work.
-            
+
             <br>
         </p>
+        <div class = "graph-width">
         <div class = "column-left">
-          <canvas id="graph" width="500" height="500"></canvas>
+          <canvas id="bar" width="400" height="400"></canvas>
         </div>
         <div id = "column-right">
-          <canvas id="bar" width="500" height="500"></canvas>
+          <canvas id="graph" width="400" height="400"></canvas>
         </div>
-        <!-- <h2>Apply to Real World Data: </h2>
-        <p>Compare simulated results with the average commute time by city.
-        <br>
-        Choose City:
-        </p>
-        <div id = "column-right">
-          <canvas id="compare" width="400" height="400"></canvas>
-        </div> -->
+      </div>
+
         <p>
             <span class="subtitle">Conclusion:</span><br>
-            <img class = "column-right" src="graph.jpg" alt="Commute Graph">
-            As you can see if more percentage of people commute by car, 
-            then the roads will be more crowded, 
-            making the average commute time of of both buses and cars increase.
-            The graph to the right show the average commute time from the past 40 years,
-            we can see that on average Americans are taking more time to commute. 
-            Could it be because more people are driving to work?
-        </p> 
-        
-        <a href="https://www.washingtonpost.com/business/2019/10/07/nine-days-road-average-commute-time-reached-new-record-last-year/">source 1</a>
-        <a href="https://www.titlemax.com/discovery-center/planes-trains-and-automobiles/100-u-s-cities-ranked-by-commute-time/">source 2</a>
+              As you can see if more percentage of people commute by car,
+              then the roads will be more crowded,
+              making the average commute time of of both buses and cars increase.
+              The <a href="https://www.washingtonpost.com/business/2019/10/07/nine-days-road-average-commute-time-reached-new-record-last-year/">
+              graph</a> below shows the average commute time from the past 40 years,
+              we can see that on average Americans are taking more time to commute.
+              Could it be because more people are driving to work?
+        </p>
+        </div>
+
+        <div class="picture">
+          <img src="graph.jpg" alt="Commute Graph">
+        </div>
+
 
         <script>
             "use strict";
@@ -154,7 +269,7 @@
 
             const widthSmall = canvasSmall.width;
             const heightSmall = canvasSmall.height;
-            
+
             const block_x_small = 6;
             const block_y_small = 6;
             const block_width_small = widthSmall/block_x_small;
@@ -220,7 +335,7 @@
                     }
                 }
             }
-           
+
             function updateSmall () {
                 if (person.arrived) {
                     clearInterval(intervalIdSmall);
@@ -255,7 +370,7 @@
             }
 
             simpleButton.addEventListener("click", simulateSmall);
-            
+
 
             // ------------------------------------------------------------------------------
             // ------------------------------------------------------------------------------
@@ -598,7 +713,7 @@
                     ctx.fillStyle = '#FF1493';
                     ctx.fillRect((i+0.45)*block_width,j*block_height,0.1*block_width,block_height);
                     ctx.fillRect(i*block_width,(j+0.45)*block_height,block_width,0.1*block_height);
-                    
+
                 }
             }
 
@@ -609,13 +724,13 @@
                     ctx.fillStyle = '#FFFFFF';
                     ctx.fillRect((i+0.45)*block_width,j*block_height,0.1*block_width,block_height);
                     ctx.fillRect(i*block_width,(j+0.45)*block_height,block_width,0.1*block_height);
-                    
+
                 }
             }
             function findMainBuildings(){
                 return [resList[0], workList[0]];
             }
-            
+
             function init (){
                 time = 0;
                 cars = [];
@@ -652,19 +767,19 @@
                     const walker = new Walk();
                     walk.push(walker);
                 }
-                
+
 
                 for(var c = 0; c < Math.floor(population * carper / 100); c++) {
                     const driver = new Car();
                     cars.push(driver);
                 }
-                
+
                 for(var c = 0; c < Math.floor(population * busper / 100 / 40); c++) {
                     const busDriver = new Bus();
                     bus.push(busDriver);
                 }
-                
-                
+
+
             }
 
             function terminate() {
@@ -936,13 +1051,20 @@
               // calculate bus and bar
               var carY = (height1 - margin) - carTime*ticker;
               var busY = (height1 - margin) - busTime*ticker;
-              var xDif = (width1 - (2*margin))/ 7;
+              var xDif = (width1 - (2*margin))/ 10;
+              // calculate average commute
+              var avgTime = carTime * parseInt(carper)/100 + busTime * parseInt(busper)/100;
+              console.log(carTime, carper, busTime, busper, avgTime);
+              var avgY = (height1 - margin) - avgTime*ticker;
               // bus Bar
               drawBar(ctx1, margin + xDif, busY, 2*xDif, busTime*ticker, "blue");
               drawText(ctx1,margin + 2*xDif, height1 - margin/2 , "Bus", "white", "center", 25, "Arial");
               // car Bar
               drawBar(ctx1, margin + 4*xDif, carY, 2*xDif, carTime*ticker, "red");
               drawText(ctx1,margin + 5*xDif, height1 - margin/2 , "Car", "white", "center",25, "Arial");
+              // avg Bar
+              drawBar(ctx1, margin + 7*xDif, avgY, 2*xDif, avgTime*ticker, "yellow");
+              drawText(ctx1,margin + 8*xDif, height1 - margin/2 , "Avg", "white", "center",25, "Arial");
 
             }
 

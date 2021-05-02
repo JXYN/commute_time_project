@@ -102,6 +102,7 @@
             .min-width {
               max-width: 65%;
               margin: auto;
+              text-align: center;
             }
 
             .graph-width {
@@ -124,13 +125,20 @@
           the risk of physical inactivity and sleep problems. Therefore, we want to
           explore how different methods of transportation affect total average
           commute time in a city.
+          <br>
+          <br>
         </p>
 
-        <p>
+        <p class = "min-width">
             <span class="subtitle">How our simulation works:</span><br>
-
-            <span class="red"> Red</span> represents the the traffic in an particular intersection <br>
-            <span class="brown">Brown</span> represent a workplace.<br>
+            <br>
+            For each simulation, the percentage of people riding the <span class="red"> bus</span>,
+            the percentage of people driving a <span class="blue">car</span>, and
+            the percentage of people walking to work are specified. We are also
+            making the assumption that the average distance to work for those
+            walking to work is 1 mile. Lastly, <span class="brown">Brown</span> represent a workplace.
+            <br>
+            <br>
             <button id="simpleButton" type="button">Simulate!</button>
         </p>
         <p>
@@ -201,7 +209,7 @@
       </div>
 
       <p>
-          <span class="subtitle">Main Takeaways:</span><br>
+          <span class="subtitle">Key Takeaways:</span><br>
           If you compare the result from the first simulation to the result of the
           second simulation, we see that the average commute time for the city
           decreased when more people took public transportation (car) rather than
@@ -209,6 +217,38 @@
           <a href="https://cleantechnica.com/2016/11/29/9641-annual-savings-taking-public-transportation-usa/#:~:text=The%20annual%20savings%20is%20%249%2C641,transit%20than%20in%20a%20car.">
           American Public Transportation Association</a>, individuals who ride public
           transport instead of driving save $803 a month on average.
+          <br>
+          <br>
+          <div class="min-width">
+            Let's take a look at monthly and annual savings when switching from
+            driving to taking public transit to work for the 20 largest metro areas
+            in United States.
+          <br>
+          <br>
+          Choose a city:
+          <select name="metrocity" id="metrocity">
+          <option value="Nyc">New York</option>
+          <option value="Sf">San Fransisco</option>
+          <option value="Boston">Boston</option>
+          <option value="Philadelphia">Philadelphia</option>
+          <option value="Seattle">Seattle</option>
+          <option value="Chicago">Chicago</option>
+          <option value="Honolulu">Honolulu</option>
+          <option value="LA">Los Angeles</option>
+          <option value="Sd">San Diego</option>
+          <option value="Portland">Portland</option>
+          <option value="Minneapolis">Minneapolis</option>
+          <option value="Baltimore">Baltimore</option>
+          <option value="Denver">Denver</option>
+          <option value="Dc">Washington, DC</option>
+          <option value="Pittsburgh">Pittsburgh</option>
+          <option value="Cleveland">Cleveland</option>
+          <option value="Miami">Miami</option>
+          <option value="Atlanta">Atlanta</option>
+          <option value="lv">Las Vegas</option>
+          <option value="Dallas">Dallas</option>
+          </select>
+          </div>
       </p>
 
 

@@ -144,7 +144,7 @@
             95% poeple commute by <span class="red"> car</span> <br>
             3% people commute by <span class="blue"> bus</span> <br>
             2% people commute by foot <br>
-            Your commute distance:
+  
             <button id="button" type="button">Simulate!</button> <br>
             <br>
             On average it will take:
@@ -207,9 +207,9 @@
             City Population Density: <label for="pop"></label><input id="population" type="range" min="1000" max="100000" value="30000" id="pop"
             step="1" oninput="outputUpdate(value)"> <output for="pop" id="pLabel">30000</output>
             people per square mile <br>
-            <input id="carper" type="number" step="1" value ="90" max = "98" min = "1">% poeple commute by <span class="red"> car</span>,
-            <input id="busper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by <span class="blue"> bus</span>, and
-            <input id="walkper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by foot.
+            <input id="carper" type="number" step="1" value ="90" max = "98" min = "1">% poeple commute by <span class="red"> car</span><br>
+            <input id="busper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by <span class="blue"> bus</span><br>
+            <input id="walkper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by foot 
             <br> <br>
             <span class="green">
             Your commute distance </span>is
@@ -223,6 +223,7 @@
 
             
             <button id="button3" type="button">Simulate!</button><br>
+            <br>
             
             Your commute time: <span class="red" id="mainTime"> </span> minutes
             <br>
@@ -914,15 +915,18 @@
                             console.log("wtf");
                             averageWalk.innerText = "N/A";
                         }
-                        if (mainMethodNum == 1) {
+                        if(freeControl) {
+                            if (mainMethodNum == 1) {
                             mainTime.innerText = parseFloat((cars[0]).commute_time).toFixed(2);
+                            }
+                            if (mainMethodNum == 2) {
+                                mainTime.innerText = parseFloat((bus[0]).commute_time).toFixed(2);
+                            }
+                            if (mainMethodNum == 3) {
+                                mainTime.innerText = parseFloat(20*mainDist).toFixed(2);
+                            }
                         }
-                        if (mainMethodNum == 2) {
-                            mainTime.innerText = parseFloat((bus[0]).commute_time).toFixed(2);
-                        }
-                        if (mainMethodNum == 3) {
-                            mainTime.innerText = parseFloat(20*mainDist).toFixed(2);
-                        }
+                        
                         drawGraph();
                         clearInterval(intervalId);
                     }

@@ -109,6 +109,11 @@
               max-width: 75%;
               margin: auto;
             }
+
+            .center-graph {
+              margin: auto;
+              max-width:35%;
+            }
           }
 
         </style>
@@ -227,29 +232,35 @@
           <br>
           Choose a city:
           <select name="metrocity" id="metrocity">
-          <option value="Nyc">New York</option>
-          <option value="Sf">San Fransisco</option>
+          <option value="New York">New York</option>
+          <option value="San Francisco">San Francisco</option>
           <option value="Boston">Boston</option>
           <option value="Philadelphia">Philadelphia</option>
           <option value="Seattle">Seattle</option>
           <option value="Chicago">Chicago</option>
           <option value="Honolulu">Honolulu</option>
-          <option value="LA">Los Angeles</option>
-          <option value="Sd">San Diego</option>
+          <option value="Los Angeles">Los Angeles</option>
+          <option value="San Diego">San Diego</option>
           <option value="Portland">Portland</option>
           <option value="Minneapolis">Minneapolis</option>
           <option value="Baltimore">Baltimore</option>
           <option value="Denver">Denver</option>
-          <option value="Dc">Washington, DC</option>
+          <option value="Washington, DC">Washington, DC</option>
           <option value="Pittsburgh">Pittsburgh</option>
           <option value="Cleveland">Cleveland</option>
           <option value="Miami">Miami</option>
           <option value="Atlanta">Atlanta</option>
-          <option value="lv">Las Vegas</option>
+          <option value="Las Vegas">Las Vegas</option>
           <option value="Dallas">Dallas</option>
           </select>
+           . Percent of days taking public transit:
+           <input type="number" id="transitPercent" value="100" min = "1", max = 100> %
           </div>
-      </p>
+          <br>
+            </p>
+          <div class="center-graph">
+            <canvas id="cityBar" width="400" height="400"></canvas>
+          </div>
 
 
         <p>
@@ -319,10 +330,6 @@
 
         <script>
             "use strict";
-
-
-
-
             const simpleButton = document.getElementById("simpleButton");
             const canvasSmall = document.getElementById("graph_intro");
             const ctxSmall = canvasSmall.getContext('2d');
@@ -431,25 +438,6 @@
 
             simpleButton.addEventListener("click", simulateSmall);
 
-
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-            // ------------------------------------------------------------------------------
-
-
-
-
             const populationButton = document.getElementById("population");
 
             const carperButton = document.getElementById("carper");
@@ -463,6 +451,33 @@
             function outputUpdate(plabel) {
                 document.querySelector('#pLabel').value = plabel;
             }
+
+            function drawBar(ctx, x, y, width, height, color){
+              ctx.save();
+              ctx.fillStyle=color;
+              ctx.fillRect(x,y,width,height);
+              ctx.restore();
+            }
+
+            function drawLine(ctx, x0, y0, x1, y1, color){
+              ctx.save();
+              ctx.strokeStyle = color;
+              ctx.beginPath();
+              ctx.moveTo(x0,y0);
+              ctx.lineTo(x1,y1);
+              ctx.stroke();
+              ctx.restore();
+            }
+
+            function drawText(ctx, x, y, text, color, align, size, font) {
+              ctx.save();
+              ctx.fillStyle = color;
+              ctx.textAlign = align;
+              ctx.font = String(size) + "px " + font;
+              ctx.fillText(text, x, y);
+              ctx.restore();
+            }
+
 
             function veryBigFunction ( freeControl,canvasName, barName, simulateButtonName, population,carper, busper,walkper,averageCarName, averageBusName, averageWalkName, mainDistName,mainTimeName,mainMethodName,averageTotalTimeName) {
 
@@ -1059,33 +1074,6 @@
             button.addEventListener("click", simulate);
 
 
-
-            function drawBar(ctx, x, y, width, height, color){
-              ctx.save();
-              ctx.fillStyle=color;
-              ctx.fillRect(x,y,width,height);
-              ctx.restore();
-            }
-
-            function drawLine(ctx, x0, y0, x1, y1, color){
-              ctx.save();
-              ctx.strokeStyle = color;
-              ctx.beginPath();
-              ctx.moveTo(x0,y0);
-              ctx.lineTo(x1,y1);
-              ctx.stroke();
-              ctx.restore();
-            }
-
-            function drawText(ctx, x, y, text, color, align, size, font) {
-              ctx.save();
-              ctx.fillStyle = color;
-              ctx.textAlign = align;
-              ctx.font = String(size) + "px " + font;
-              ctx.fillText(text, x, y);
-              ctx.restore();
-            }
-
             function drawGraph() {
               // initialize
               drawBar(ctx1, 0,0,width1, height1, "black");
@@ -1126,7 +1114,7 @@
 
               averageTotalTime.innerText = parseFloat(avgTime).toFixed(2);
             }
-        }
+
 
         function move(car) {
                 if(!arriveX(car) && !arriveY(car)) {
@@ -1169,52 +1157,71 @@
             function arrived(car) {
                 return arriveX(car) && arriveY(car);
             }
-            // const canvas2 = document.getElementById('compare');
-            // const ctx2 = canvas2.getContext('2d');
-            // const width2 = canvas2.width;
-            // const height2 = canvas2.height;
-            // ctx2.fillStyle = "#000000";
-            // ctx2.fillRect(0,0,width2,height2);
-            //
-            // // https://www.titlemax.com/discovery-center/planes-trains-and-automobiles/100-u-s-cities-ranked-by-commute-time/
-            // const commuteTime = [36.3,34.6,32.8,32.1,32,31.6,31.4,31,30.8,30.4,
-            //   30.1,30,29.7,29.5,29.1,28.9,28.4,28.2,28.2,28.1,27.7,27.5,27.3,27.2,
-            //   27.1,26.8,26.8,26.8,26.7,26.6,26.6,26.6,26.5,26.5,26.2,26.2,26,26,
-            //   25.9,25.8,25.8,25.7,25.6,25.4,25.4,25.3,25.2,24.9,24.8,24.8,24.7,
-            //   24.6,24.5,24.5,24.5,24.4,24.3,24.1,23.9,23.9,23.8,23.7,23.7,23.7,
-            //   23.6,23.4,23.4,23.4,23.4,23.4,23.3,23.2,23.1,23.1,23.1,23,22.9,
-            //   22.9,22.8,22.8,22.7,22.5,22.4,22.4,22.4,22,21.9,21.8,21.8,21.7,
-            //   21.5,21.5,21.4,21.3,21.3,21.2,20.7,20.3,20.2,19.5];
-            //
-            // const cities =
-            // ["New York-Newark-Jersey City, NY-NJ","Washington-Arlington-Alexandria, DC-VA",
-            // "San Francisco-Oakland-Hayward, CA","Riverside-San Bernardino-Ontario, CA",
-            // "Stockton-Lodi, CA","Chicago-Naperville-Elgin, IL","Atlanta-Sandy Springs-Roswell, GA",
-            // "Boston-Cambridge-Newton, MA","Baltimore-Columbia-Towson, MD","Bridgeport-Stamford-Norwalk, CT",
-            // "Seattle-Tacoma-Bellevue, WA","Los Angeles-Long Beach-Anaheim, CA","Houston-The Woodlands-Sugar Land, TX",
-            // "Philadelphia-Camden-Wilmington, PA-NJ-DE","Urban Honolulu, HI","Miami-Fort Lauderdale-West Palm Beach, FL",
-            // "Worcester, MA","Orlando-Kissimmee-Sanford, FL","San Jose-Sunnyvale-Santa Clara, CA",
-            // "Dallas-Fort Worth-Arlington, TX","Allentown-Bethlehem-Easton, PA","Denver-Aurora-Lakewood, CO",
-            // "Nashville-Davidson-Murfreesboro-Franklin, TN","Cape Coral-Fort Myers, FL","Tampa-St. Petersburg-Clearwater, FL",
-            // "Detroit-Warren-Dearborn, MI","Austin-Round Rock, TX","Sacramento-Roseville-Arden-Arcade, CA",
-            // "Pittsburgh, PA","Portland-Vancouver-Hillsboro, OR-WA","Oxnard-Thousand Oaks-Ventura, CA",
-            // "Baton Rouge, LA","Charlotte-Concord-Gastonia, NC","Jacksonville, FL","Phoenix-Mesa-Scottsdale, AZ",
-            // "Birmingham-Hoover, AL","San Antonio-New Braunfels, TX","Lakeland-Winter Haven, FL",
-            // "Raleigh, NC","Providence-Warwick, RI","New Orleans-Metairie, LA","San Diego-Carlsbad, CA",
-            // "St. Louis, MO","Charleston-North Charleston, SC","Deltona-Daytona Beach-Ormond Beach, FL",
-            // "Minneapolis-St. Paul-Bloomington, MN","Richmond, VA","New Haven-Milford, CT","Indianapolis-Carmel-Anderson, IN",
-            // "Portland-South Portland, ME","Cincinnati, OH","Cleveland-Elyria, OH","Las Vegas-Henderson-Paradise, NV",
-            // "Tucson, AZ","North Port-Sarasota-Bradenton, FL","Jackson, MS","Virginia Beach-Norfolk-Newport News, VA",
-            // "Memphis, TN","Louisville/Jefferson County, KY","Hartford-West Hartford-East Hartford, CT",
-            // "Durham-Chapel Hill, NC","Columbus, OH","Columbia, SC","Augusta-Richmond County, GA",
-            // "Knoxville, TN","Albuquerque, NM","El Paso, TX","Akron, OH","Bakersfield, CA",
-            // "Winston-Salem, NC","Colorado Springs, CO","Chattanooga, TN","Milwaukee-Waukesha-West Allis, WI",
-            // "Albany-Schenectady-Troy, NY","Lancaster, PA","Kansas City, MO-KS","Little Rock-North Little Rock-Conway, AR",
-            // "Harrisburg-Carlisle, PA","Greenville-Anderson-Mauldin, SC","Springfield, MA","Oklahoma City, OK",
-            // "Ogden-Clearfield, UT","Salt Lake City, UT","Fresno, CA","Greensboro-High Point, NC",
-            // "Boise City, ID","McAllen-Edinburg-Mission, TX","Grand Rapids-Wyoming, MI","Scranton-Wilkes-Barre-Hazleton, PA",
-            // "Madison, WI","Buffalo-Cheektowaga-Niagara Falls, NY","Tulsa, OK","Provo-Orem, UT","Rochester, NY",
-            // "Dayton, OH","Syracuse, NY","Toledo, OH","Des Moines-West Des Moines, IA","Omaha-Council Bluffs, NE-IA","Wichita, KS"];
+          }
+
+            const canvas0 = document.getElementById('cityBar');
+            const width0 = canvas0.width;
+            const height0 = canvas0.height;
+            const ctx0 = canvas0.getContext('2d');
+
+            var cities = [ "New York", "San Francisco","Boston", "Philadelphia",
+             "Seattle", "Chicago", "Honolulu"	,"Los Angeles", "San Diego", "Portland",
+             "Minneapolis","Baltimore", "Denver","Washington, DC", "Pittsburgh"	,
+             "Cleveland"	,"Miami", "Atlanta", "Las Vegas", "Dallas"];
+            var monthly = [1208,1071,1050,973,965,955,935,915,869,858,838,829,
+              827,810,796,783,762,757,748,743];
+            var annual = [14501,12849,12596,11671,11583,11458,11221,10984,10423,
+              10295,10053,9950,9919,9724,9553,9399,9143,9089,8973,8912];
+
+            var chosenCity = document.getElementById('metrocity');
+            var transper = document.getElementById("transitPercent");
+            var cityName;
+            var annSav;
+            var monSav;
+
+            function setType() {
+              //init
+              cityName = chosenCity.value;
+              annSav = annual[cities.indexOf(cityName)]*parseInt(transper.value)/100;
+              monSav = monthly[cities.indexOf(cityName)]*parseInt(transper.value)/100;
+              console.log(cityName,annSav, monSav);
+              drawComp();
+            }
+            chosenCity.addEventListener('input', setType);
+            transper.addEventListener('input', setType);
+            setType();
+
+            function drawComp() {
+              // initialize
+              drawBar(ctx0, 0,0,width0, height0, "black");
+              // calculate variables
+              var xMax = Math.ceil(annSav/1000) * 1000;
+              console.log(xMax);
+              var margin = width0/8;
+              var ticker = (height0 - (2*margin))/xMax;
+              // draw axis
+              drawLine(ctx0,margin, height0 - margin, margin, margin, "white");
+              drawLine(ctx0,margin, height0 - margin, width0-margin, height0-margin, "white");
+              // draw tickers
+              for (var t = 0; t <= xMax; t += 1000) {
+                var y = (height0 - margin) - t*ticker;
+                if (t != 0) {
+                  drawLine(ctx0, margin, y, width0-margin, y, "grey");
+                }
+                drawText(ctx0,margin*2/5, y , "$" + String(t), "white", "center", 10, "Arial");
+              }
+              // calculate height
+              var annY = (height0 - margin) - annSav*ticker;
+              var monY = (height0 - margin) - monSav*ticker;
+              var xDif = (width0 - (2*margin))/ 7;
+              // Monthly Bar
+              drawBar(ctx0, margin + xDif, monY, 2*xDif, monSav*ticker, "green");
+              drawText(ctx0,margin + 2*xDif, height0 - margin/2 , "Monthly", "white", "center", 20, "Arial");
+              // car Bar
+              drawBar(ctx0, margin + 4*xDif, annY, 2*xDif, annSav*ticker, "green");
+              drawText(ctx0,margin + 5*xDif, height0 - margin/2 , "Annual", "white", "center",20, "Arial");
+            }
+
 
         </script>
     </body>

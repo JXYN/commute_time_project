@@ -39,8 +39,8 @@
             .green { /* OK, a bit contrived... */
                 color: #00FF00;
             }
-            .pink { /* OK, a bit contrived... */
-                color: #FF1493;
+            .brown { /* OK, a bit contrived... */
+                color: #964B00;
             }
             .blue { /* OK, a bit contrived... */
                 color: #0000ff;
@@ -130,7 +130,7 @@
             <span class="subtitle">How our simulation works:</span><br>
 
             <span class="red"> Red</span> represents the the traffic in an particular intersection <br>
-            <span class="pink">Pink</span> represent a workplace.<br>
+            <span class="brown">Brown</span> represent a workplace.<br>
             <button id="simpleButton" type="button">Simulate!</button>
         </p>
         <p>
@@ -175,28 +175,28 @@
             3% poeple commute by <span class="red"> car</span>  <br>
             95% people commute by <span class="blue"> bus</span> <br>
             2% people commute by foot <br>
-            Your commute distance:
-            <button id="button" type="button">Simulate!</button><br>
+
+            <button id="button2" type="button">Simulate!</button><br>
             <br>
             On average it will take:
             <br>
-            a car <span class="red" id="averageCar"> </span> minutes
+            a car <span class="red" id="averageCar2"> </span> minutes
             <br>
-            a bus <span class="red" id="averageBus"> </span> minutes
+            a bus <span class="red" id="averageBus2"> </span> minutes
             <br>
-            a pedestrian <span class="red" id="averageWalk"> </span> minutes
+            a pedestrian <span class="red" id="averageWalk2"> </span> minutes
             <br>
             to commute from home to work.
             <br>
-            Average commuteTime for the city is <span class="red" id="averageCity"> </span> minutes
+            Average commuteTime for the city is <span class="red" id="averageCity2"> </span> minutes
             <br>
         </p>
         <div class= "graph-width">
         <div class = "column-left">
-          <canvas id="bar" width="400" height="400"></canvas>
+          <canvas id="bar2" width="400" height="400"></canvas>
         </div>
         <div id = "column-right">
-          <canvas id="graph" width="400" height="400"></canvas>
+          <canvas id="graph2" width="400" height="400"></canvas>
         </div>
       </div>
 
@@ -218,28 +218,34 @@
             <select name="method" id="mainMethod">
                 <option value="1">Car</option>
                 <option value="2">Bus</option>
+                <option value="3">Walk</option>
               </select><br>
 
-
-            <button id="button" type="button">Simulate!</button> <br><br>
-
+            
+            <button id="button3" type="button">Simulate!</button><br>
+            
+            Your commute time: <span class="red" id="mainTime"> </span> minutes
             <br>
-
-            Your commute time: <span class="red" id="mainTime"> </span> minutes<br>
-            On average it will take
-            a car <span class="red" id="averageCar"> </span> minutes,
-            a bus <span class="red" id="averageBus"> </span> minutes, and
-            a pedestrian <span class="red" id="averageWalk"> </span> minutes
+            On average it will take:
+            <br>
+            a car <span class="red" id="averageCar3"> </span> minutes
+            <br>
+            a bus <span class="red" id="averageBus3"> </span> minutes
+            <br>
+            a pedestrian <span class="red" id="averageWalk3"> </span> minutes
+            <br>
             to commute from home to work.
-
+            <br>
+            Average commuteTime for the city is <span class="red" id="averageCity3"> </span> minutes
+            <br>
             <br>
         </p>
         <div class = "graph-width">
         <div class = "column-left">
-          <canvas id="bar" width="400" height="400"></canvas>
+          <canvas id="bar3" width="400" height="400"></canvas>
         </div>
         <div id = "column-right">
-          <canvas id="graph" width="400" height="400"></canvas>
+          <canvas id="graph3" width="400" height="400"></canvas>
         </div>
       </div>
 
@@ -263,6 +269,9 @@
         <script>
             "use strict";
 
+            
+
+            
             const simpleButton = document.getElementById("simpleButton");
             const canvasSmall = document.getElementById("graph_intro");
             const ctxSmall = canvasSmall.getContext('2d');
@@ -294,7 +303,7 @@
 
             ctxSmall.clearRect(0,0,widthSmall,heightSmall);
             ctxSmall.fillStyle = '#000000';
-            ctxSmall.fillRect(0,0,widthSmall,heightSmall);
+            // ctxSmall.fillRect(0,0,widthSmall,heightSmall);
 
             function renewBlockSmall () {
                 blocksSmall = [];
@@ -323,7 +332,7 @@
                             ctxSmall.fillRect((i+0.45)*block_width_small,j*block_height_small,0.1*block_width_small,block_height_small);
                             ctxSmall.fillRect(i*block_width_small,(j+0.45)*block_height_small,block_width_small,0.1*block_height_small);
                         } else if (blocksSmall[i][j] <0 ) {
-                            ctxSmall.fillStyle = '#FF1493';
+                            ctxSmall.fillStyle = '#964B00';
                             ctxSmall.fillRect((i+0.45)*block_width_small,j*block_height_small,0.1*block_width_small,block_height_small);
                             ctxSmall.fillRect(i*block_width_small,(j+0.45)*block_height_small,block_width_small,0.1*block_height_small);
                         }
@@ -390,39 +399,69 @@
 
 
 
+            const populationButton = document.getElementById("population");
 
+            const carperButton = document.getElementById("carper");
+            const busperButton = document.getElementById("busper");
+            const walkperButton = document.getElementById("walkper");
 
+            veryBigFunction ( false,"graph", "bar","button", 30000,95, 3,2,"averageCar", "averageBus", "averageWalk", "mainDist","mainTime","mainMethod","averageCity");
+            veryBigFunction ( false,"graph2", "bar2","button2", 30000,3, 95,2,"averageCar2", "averageBus2", "averageWalk2", "mainDist","mainTime","mainMethod","averageCity2");
+            veryBigFunction ( true,"graph3", "bar3","button3", populationButton.value,carperButton.value, busperButton.value,walkperButton.value,"averageCar3", "averageBus3", "averageWalk3", "mainDist","mainTime","mainMethod","averageCity3");
 
+            function veryBigFunction ( freeControl,canvasName, barName, simulateButtonName, population,carper, busper,walkper,averageCarName, averageBusName, averageWalkName, mainDistName,mainTimeName,mainMethodName,averageTotalTimeName) {
 
+            
+            const canvas = document.getElementById(canvasName);
 
+            const button = document.getElementById(simulateButtonName);
 
+            const averageCar = document.getElementById(averageCarName);
+            const averageBus = document.getElementById(averageBusName);
+            const averageWalk = document.getElementById(averageWalkName);
+            const averageTotalTime = document.getElementById(averageTotalTimeName);
+            const mainTime = document.getElementById(mainTimeName);
+
+            const mainDistButton = document.getElementById(mainDistName);
+            var mainDist = mainDistButton.value;
+            //make mainMethod a drop down menu
+            const mainMethodButton = document.getElementById(mainMethodName);
+            var mainMethodNum = mainMethodButton.value;
+
+            const canvas1 = document.getElementById(barName);
+            const ctx1 = canvas1.getContext('2d');
+            const width1 = canvas1.width;
+            const height1 = canvas1.height;
+            ctx1.fillStyle = "#000000";
+            // ctx1.fillRect(0,0,width1,height1);
+
+            // const canvas = document.getElementById("graph");
+            // const button = document.getElementById("button");
+            // const populationButton = document.getElementById("population");
+            // var population = populationButton.value;
+
+            // const carperButton = document.getElementById("carper");
+            // var carper = carperButton.value;
+            // const walkperButton = document.getElementById("walkper");
+            // var walkper = walkperButton.value;
+            // const busperButton = document.getElementById("busper");
+            // var busper = busperButton.value;
+
+            // const averageCar = document.getElementById("averageCar");
+            // const averageBus = document.getElementById("averageBus");
+            // const averageWalk = document.getElementById("averageWalk");
+            // const mainTime = document.getElementById("mainTime");
+
+            // const mainDistButton = document.getElementById("mainDist");
+            // var mainDist = mainDistButton.value;
+            // //make mainMethod a drop down menu
+            // const mainMethodButton = document.getElementById("mainMethod");
+            // var mainMethodNum = mainMethodButton.value;
+
+            
             function outputUpdate(plabel) {
                 document.querySelector('#pLabel').value = plabel;
             }
-
-            const button = document.getElementById("button");
-            const populationButton = document.getElementById("population");
-            var population = populationButton.value;
-
-            const carperButton = document.getElementById("carper");
-            var carper = carperButton.value;
-            const walkperButton = document.getElementById("walkper");
-            var walkper = walkperButton.value;
-            const busperButton = document.getElementById("busper");
-            var busper = busperButton.value;
-
-            const averageCar = document.getElementById("averageCar");
-            const averageBus = document.getElementById("averageBus");
-            const averageWalk = document.getElementById("averageWalk");
-            const mainTime = document.getElementById("mainTime");
-
-            const mainDistButton = document.getElementById("mainDist");
-            var mainDist = mainDistButton.value;
-            //make mainMethod a drop down menu
-            const mainMethodButton = document.getElementById("mainMethod");
-            var mainMethodNum = mainMethodButton.value;
-
-
 
             var blocks = [];
             var cars = [];
@@ -628,7 +667,7 @@
                 }
             }
 
-            const canvas = document.getElementById("graph");
+            
             const ctx = canvas.getContext('2d');
 
             const width = canvas.width;
@@ -637,12 +676,13 @@
             const block_height = height/block_y;
 
             ctx.clearRect(0,0,width,height);
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0,0,width,height);
+            // ctx.fillStyle = '#000000';
+            // ctx.fillRect(0,0,width,height);
 
 
 
             function display() {
+                
                 var maxRow = blocks.map(function(row){ return Math.max.apply(Math, row); });
                 var max = Math.max.apply(null, maxRow);
                 function ReLu(x) {
@@ -678,39 +718,41 @@
                     }
                 }
 
+                if (freeControl){
                 //drawing main, very stupid
-                if (mainMethodNum == 1){
-                    var currMain = cars[0];
-                    console.log("yes");
-                    var i = currMain.x_init;
-                    var j = currMain.y_init;
-                    ctx.fillStyle = '#00FF00';
-                    ctx.fillRect(i*block_width,j*block_width,1*block_width,1*block_width);
-                }
+                    if (mainMethodNum == 1){
+                        var currMain = cars[0];
+                        console.log("yes");
+                        var i = currMain.x_init;
+                        var j = currMain.y_init;
+                        ctx.fillStyle = '#00FF00';
+                        ctx.fillRect(i*block_width,j*block_width,1*block_width,1*block_width);
+                    }
 
-                if (mainMethodNum == 2){
-                    var currMain = bus[0];
-                    console.log("yes");
-                    var i = currMain.x_init;
-                    var j = currMain.y_init;
-                    ctx.fillStyle = '#00FF00';
-                    ctx.fillRect(i*block_width,j*block_width,1*block_width,1*block_width);
-                }
+                    if (mainMethodNum == 2){
+                        var currMain = bus[0];
+                        console.log("yes");
+                        var i = currMain.x_init;
+                        var j = currMain.y_init;
+                        ctx.fillStyle = '#00FF00';
+                        ctx.fillRect(i*block_width,j*block_width,1*block_width,1*block_width);
+                    }
 
-                if (mainMethodNum == 3){
-                    var currMain = walk[0];
-                    console.log("yes");
-                    var i = currMain.x_init;
-                    var j = currMain.y_init;
-                    ctx.fillStyle = '#00FF00';
-                    ctx.fillRect(i*block_width,j*block_width,1*block_width,1*block_width);
+                    if (mainMethodNum == 3){
+                        var currMain = walk[0];
+                        console.log("yes");
+                        var i = currMain.x_init;
+                        var j = currMain.y_init;
+                        ctx.fillStyle = '#00FF00';
+                        ctx.fillRect(i*block_width,j*block_width,1*block_width,1*block_width);
+                    }
                 }
 
                 //display buildings
                 for (var b = 0; b < workList.length; b++) {
                     var i = workList[b].x;
                     var j = workList[b].y;
-                    ctx.fillStyle = '#FF1493';
+                    ctx.fillStyle = '#964B00';
                     ctx.fillRect((i+0.45)*block_width,j*block_height,0.1*block_width,block_height);
                     ctx.fillRect(i*block_width,(j+0.45)*block_height,block_width,0.1*block_height);
 
@@ -737,13 +779,18 @@
                 bus = [];
                 walk = [];
                 intervalId = null;
-                population = populationButton.value;
-                carper = carperButton.value;
-                busper = busperButton.value;
-                walkper = walkperButton.value;
+                if(freeControl){
+                    population = populationButton.value;
+                    carper = carperButton.value;
+                    busper = busperButton.value;
+                    walkper = walkperButton.value;
+                    mainDist = mainDistButton.value;
+                    mainMethodNum = mainMethodButton.value;
+                }
                 renewBlock();
 
-                deleteBuildings();
+                ctx.clearRect(0,0,width,height);
+                // deleteBuildings();
                 getResList();
                 getWorkList();
                 getWalkingDistancePairs();
@@ -760,7 +807,7 @@
 
                 if (mainMethodNum == 2) {
                     const mainChar = new Bus(true);
-                    walk.push(mainChar);
+                    bus.push(mainChar);
                 }
 
                 for(var c = 0; c < Math.floor(population * walkper / 100); c++) {
@@ -818,52 +865,12 @@
             //     }
             // }
 
-            function move(car) {
-                if(!arriveX(car) && !arriveY(car)) {
-                    if (Math.random()<0.5) {
-                        if(car.x_end < car.x_init) {
-                            car.x_init--;
-                        } else {
-                            car.x_init++;
-                        }
-                    } else {
-                        if(car.y_end < car.y_init) {
-                        car.y_init--;
-                        } else {
-                            car.y_init++;
-                        }
-                    }
-                } else if (!arriveX(car)) {
-                    if(car.x_end < car.x_init) {
-                        car.x_init--;
-                    } else {
-                        car.x_init++;
-                    }
-                } else if (!arriveY(car)) {
-                    if(car.y_end < car.y_init) {
-                        car.y_init--;
-                    } else {
-                        car.y_init++;
-                    }
-                }
-            }
-
+            
             function traffic(i,j)  {
                 var b = blocks[i][j];
-                return Math.floor((b)/10) + 1;
+                return Math.floor((b)/5) + 1;
             }
-
-            function arriveX(car) {
-                return car.x_init == car.x_end;
-            }
-
-            function arriveY(car) {
-                return car.y_init == car.y_end;
-            }
-
-            function arrived(car) {
-                return arriveX(car) && arriveY(car);
-            }
+            
 
             function findCarCommuteTime() {
                 var sum = 0;
@@ -877,7 +884,7 @@
                 for (var i = 0; i < bus.length; i++) {
                     sum = sum + bus[i].commute_time;
                 }
-                return sum/bus.length/2+10;
+                return sum/bus.length/2+6;
             }
             function findWalkCommuteTime() {
                 var sum = 0;
@@ -912,7 +919,7 @@
                             mainTime.innerText = parseFloat((bus[0]).commute_time).toFixed(2);
                         }
                         if (mainMethodNum == 3) {
-                            mainTime.innerText = parseFloat((walk[0]).commute_time).toFixed(2);
+                            mainTime.innerText = parseFloat(20*mainDist).toFixed(2);
                         }
                         drawGraph();
                         clearInterval(intervalId);
@@ -995,12 +1002,7 @@
 
             button.addEventListener("click", simulate);
 
-            const canvas1 = document.getElementById('bar');
-            const ctx1 = canvas1.getContext('2d');
-            const width1 = canvas1.width;
-            const height1 = canvas1.height;
-            ctx1.fillStyle = "#000000";
-            ctx1.fillRect(0,0,width1,height1);
+            
 
             function drawBar(ctx, x, y, width, height, color){
               ctx.save();
@@ -1065,9 +1067,52 @@
               // avg Bar
               drawBar(ctx1, margin + 7*xDif, avgY, 2*xDif, avgTime*ticker, "yellow");
               drawText(ctx1,margin + 8*xDif, height1 - margin/2 , "Avg", "white", "center",25, "Arial");
+              
+              averageTotalTime.innerText = parseFloat(avgTime).toFixed(2);
+            }
+        }
 
+        function move(car) {
+                if(!arriveX(car) && !arriveY(car)) {
+                    if (Math.random()<0.5) {
+                        if(car.x_end < car.x_init) {
+                            car.x_init--;
+                        } else {
+                            car.x_init++;
+                        }
+                    } else {
+                        if(car.y_end < car.y_init) {
+                        car.y_init--;
+                        } else {
+                            car.y_init++;
+                        }
+                    }
+                } else if (!arriveX(car)) {
+                    if(car.x_end < car.x_init) {
+                        car.x_init--;
+                    } else {
+                        car.x_init++;
+                    }
+                } else if (!arriveY(car)) {
+                    if(car.y_end < car.y_init) {
+                        car.y_init--;
+                    } else {
+                        car.y_init++;
+                    }
+                }
             }
 
+            function arriveX(car) {
+                return car.x_init == car.x_end;
+            }
+
+            function arriveY(car) {
+                return car.y_init == car.y_end;
+            }
+
+            function arrived(car) {
+                return arriveX(car) && arriveY(car);
+            }
             // const canvas2 = document.getElementById('compare');
             // const ctx2 = canvas2.getContext('2d');
             // const width2 = canvas2.width;

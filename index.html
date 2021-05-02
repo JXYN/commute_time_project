@@ -1115,8 +1115,9 @@
               averageTotalTime.innerText = parseFloat(avgTime).toFixed(2);
             }
 
+          }
 
-        function move(car) {
+          function move(car) {
                 if(!arriveX(car) && !arriveY(car)) {
                     if (Math.random()<0.5) {
                         if(car.x_end < car.x_init) {
@@ -1146,19 +1147,7 @@
                 }
             }
 
-            function arriveX(car) {
-                return car.x_init == car.x_end;
-            }
-
-            function arriveY(car) {
-                return car.y_init == car.y_end;
-            }
-
-            function arrived(car) {
-                return arriveX(car) && arriveY(car);
-            }
-          }
-
+            
             const canvas0 = document.getElementById('cityBar');
             const width0 = canvas0.width;
             const height0 = canvas0.height;
@@ -1222,6 +1211,47 @@
               drawText(ctx0,margin + 5*xDif, height0 - margin/2 , "Annual", "white", "center",20, "Arial");
             }
 
+            function move(car) {
+                if(!arriveX(car) && !arriveY(car)) {
+                    if (Math.random()<0.5) {
+                        if(car.x_end < car.x_init) {
+                            car.x_init--;
+                        } else {
+                            car.x_init++;
+                        }
+                    } else {
+                        if(car.y_end < car.y_init) {
+                        car.y_init--;
+                        } else {
+                            car.y_init++;
+                        }
+                    }
+                } else if (!arriveX(car)) {
+                    if(car.x_end < car.x_init) {
+                        car.x_init--;
+                    } else {
+                        car.x_init++;
+                    }
+                } else if (!arriveY(car)) {
+                    if(car.y_end < car.y_init) {
+                        car.y_init--;
+                    } else {
+                        car.y_init++;
+                    }
+                }
+            }
+
+            function arriveX(car) {
+                return car.x_init == car.x_end;
+            }
+
+            function arriveY(car) {
+                return car.y_init == car.y_end;
+            }
+
+            function arrived(car) {
+                return arriveX(car) && arriveY(car);
+            }
 
         </script>
     </body>

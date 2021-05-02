@@ -409,6 +409,10 @@
             veryBigFunction ( false,"graph2", "bar2","button2", 30000,3, 95,2,"averageCar2", "averageBus2", "averageWalk2", "mainDist","mainTime","mainMethod","averageCity2");
             veryBigFunction ( true,"graph3", "bar3","button3", populationButton.value,carperButton.value, busperButton.value,walkperButton.value,"averageCar3", "averageBus3", "averageWalk3", "mainDist","mainTime","mainMethod","averageCity3");
 
+            function outputUpdate(plabel) {
+                document.querySelector('#pLabel').value = plabel;
+            }
+            
             function veryBigFunction ( freeControl,canvasName, barName, simulateButtonName, population,carper, busper,walkper,averageCarName, averageBusName, averageWalkName, mainDistName,mainTimeName,mainMethodName,averageTotalTimeName) {
 
             
@@ -459,9 +463,7 @@
             // var mainMethodNum = mainMethodButton.value;
 
             
-            function outputUpdate(plabel) {
-                document.querySelector('#pLabel').value = plabel;
-            }
+            
 
             var blocks = [];
             var cars = [];

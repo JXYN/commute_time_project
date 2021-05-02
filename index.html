@@ -38,10 +38,17 @@
     <body>
         <h1>Commute Time Simulation</h1>
         <p>
-            If a city has a population density <input id="population" type="number" step="1000" value ="30000" max = "100000" min = "1"> people per square mile,
-            <input id="carper" type="number" step="1" value ="90" max = "100" min = "0">% poeple commute by car.
-            <input id="busper" type="number" step="1" value ="5" max = "100" min = "0">% people commute by bus.
-            <input id="walkper" type="number" step="1" value ="5" max = "100" min = "0">% people commute by foot.
+            If a city has a population density <label for="pop">population density</label><input id="population" type="range" min="1000" max="100000" value="30000" id="pop" 
+            step="1" oninput="outputUpdate(value)"> <output for="pop" id="pLabel">30000</output>
+             people per square mile,
+            <input id="carper" type="number" step="1" value ="90" max = "98" min = "1">% poeple commute by car.
+            <input id="busper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by bus.
+            <input id="walkper" type="number" step="1" value ="5" max = "98" min = "1">% people commute by foot.
+            Main character commute distance 
+            <input id="mainDist" type="number" step="1" value ="10" max = "100" min = "0"> miles.
+            Main character commute method 
+            <input id="mainMethod" type="number" step="1" value ="1" max = "3" min = "1">.
+            Main character commute time <span class="red" id="mainTime"> </span>
             On average it will take
             a car <span class="red" id="averageCar"> </span> minutes,
             a bus <span class="red" id="averageBus"> </span> minutes, and
@@ -68,6 +75,10 @@
         </p>
         <script>
             "use strict";
+            function outputUpdate(plabel) {
+                document.querySelector('#pLabel').value = plabel;
+            }
+
             const button = document.getElementById("button");
             const populationButton = document.getElementById("population");
             var population = populationButton.value;
@@ -82,6 +93,16 @@
             const averageCar = document.getElementById("averageCar");
             const averageBus = document.getElementById("averageBus");
             const averageWalk = document.getElementById("averageWalk");
+            const mainTime = document.getElementById("mainTime");
+
+            const mainDistButton = document.getElementById("mainDist");
+            var mainDist = mainDistButton.value;
+            //make mainMethod a drop down menu
+            const mainMethodButton = document.getElementById("mainMethod");
+            var mainMethodNum = mainMethodButton.value;
+
+
+
             var blocks = [];
             var cars = [];
             var bus  = [];
@@ -93,44 +114,94 @@
             var intervalId = null;
 
             class Car {
-                constructor() {
-                    this.x_init = Math.floor(Math.random() * block_x)  ;
-                    this.y_init = Math.floor(Math.random() * block_y) ;
-                    this.x_end = Math.floor(Math.random() * block_x) ;
-                    this.y_end = Math.floor(Math.random() * block_y);
+                constructor(main = false) {
+                    if (main) {
+                        var [res, work] = findMainBuildings();
+                    }
+                    else{
+                        var [res, work] = getResWork();
+                    }
+                    this.x_init = res.x;
+                    this.y_init = res.y;
+                    this.x_end = work.x;
+                    this.y_end = work.y;
                     this.commute_time = 0;
                     this.spawn_time = Math.floor(Math.random() * stop_spawn);
                     this.move_time = this.spawn_time;
                     this.arrived = false;
+                    this.main = main;
                 }
             }
 
             class Bus {
-                constructor() {
-                    this.x_init = Math.floor(Math.random() * block_x)  ;
-                    this.y_init = Math.floor(Math.random() * block_y) ;
-                    this.x_end = Math.floor(Math.random() * block_x) ;
-                    this.y_end = Math.floor(Math.random() * block_y);
+                constructor(main = false) {
+                    if (main) {
+                        var [res, work] = findMainBuildings();
+                    }
+                    else{
+                        var [res, work] = getResWork();
+                    }
+                    this.x_init = res.x;
+                    this.y_init = res.y;
+                    this.x_end = work.x;
+                    this.y_end = work.y;
                     this.commute_time = 0;
                     this.spawn_time = Math.floor(Math.random() * stop_spawn);
                     this.move_time = this.spawn_time;
                     this.arrived = false;
+                    this.main = main;
                 }
             }
 
             class Walk {
-                constructor() {
-                    this.x_init = Math.floor(Math.random() * block_x)  ;
-                    this.y_init = Math.floor(Math.random() * block_y) ;
-                    this.x_end = Math.floor(Math.random() * block_x) ;
-                    this.y_end = Math.floor(Math.random() * block_y);
+                constructor(main = false) {
+                    if (main) {
+                        var [res, work] = findMainBuildings();
+                    }
+                    else{
+                        var [res, work] = getRandomWalkPair();
+                    }
+                    this.x_init = res.x;
+                    this.y_init = res.y;
+                    this.x_end = work.x;
+                    this.y_end = work.y;
                     this.commute_time = 0;
                     this.spawn_time = Math.floor(Math.random() * stop_spawn);
                     this.move_time = this.spawn_time;
                     this.arrived = false;
+                    this.main = main;
                 }
             }
 
+            class BuildingRes {
+                constructor(numPeople, x = 0, y = 0) {
+                    if (x != 0 && y != 0) {
+                        this.x = x;
+                        this.y = y;
+                    }
+                    else{
+                        this.x = Math.floor(Math.random() * block_x)  ;
+                        this.y = Math.floor(Math.random() * block_y) ;
+                    }
+                    this.numPeople = numPeople;
+                    this.currNumPeople = 0;
+                }
+            }
+
+            class BuildingWork {
+                constructor(numPeople, x = 0, y = 0) {
+                    if (x != 0 && y != 0) {
+                        this.x = x;
+                        this.y = y;
+                    }
+                    else{
+                    this.x = Math.floor(Math.random() * (Math.floor(block_x * 2 / 3)) +  Math.floor(block_x * 1 / 6))  ;
+                    this.y = Math.floor(Math.random() * (Math.floor(block_y * 2 / 3)) +  Math.floor(block_x * 1 / 6))  ;
+                    }
+                    this.numPeople = numPeople;
+                    this.currNumPeople = 0;
+                }
+            }
 
             function componentToHex(c) {
                 var hex = c.toString(16);
@@ -143,9 +214,87 @@
 
             var resList = [];
             var workList = [];
+            var walkPairs = [];
 
             function getResList(){
+                var resPopulation = population;
+                resList = [];
+                if (resPopulation > 1) {
+                    resList.push(new BuildingRes(1, Math.floor(10 + Math.random() * 5), Math.floor(10 + Math.random() * 5)));
+                    resPopulation -= 1;
+                }
+                while(resPopulation > 20) {
+                    const currNum = Math.floor(Math.random()*(80) + 20)
+                    resList.push(new BuildingRes(currNum));
+                    resPopulation -= currNum;
+                }
+                resList.push(new BuildingRes(resPopulation));
                 return;
+            }
+
+            function getWorkList(){
+                var workPopulation = population;
+                workList = [];
+                var mainRes = resList[0];
+                console.log(mainRes.x);
+                var mainX = Math.floor((mainDist * 2) + mainRes.x + Math.random() * 10);
+                var mainY = Math.floor((mainDist * 2) + mainRes.y + Math.random() * 10);
+                workList.push(new BuildingWork(1, mainX, mainY));
+                while(workPopulation > 50) {
+                    const currNum = Math.floor(Math.random()*(150) + 50)
+                    workList.push(new BuildingWork(currNum));
+                    workPopulation -= currNum;
+                }
+                workList.push(new BuildingWork(workPopulation));
+                return;
+            }
+
+
+            function getWalkingDistancePairs(){
+                walkPairs = [];
+                for (var i = 0; i < resList.length; i ++) {
+                    for (var j = 0; j < workList.length; j++) {
+                        var currRes = resList[i];
+                        var currWork = workList[j];
+                        if (Math.abs(currRes.x - currWork.x) < 8 && Math.abs(currRes.y - currWork.y) < 8) {
+                            walkPairs.push([currRes, currWork]);
+                        }
+                    }
+                }
+                var [firstRes, firstWork] = walkPairs[0];
+                return;
+            }
+
+
+            function getRandomBuilding(L) {
+                var curr = L[0];
+                while(true) {
+                    curr = L[Math.floor(Math.random()*L.length)];
+                    if (curr.currNumPeople < curr.numPeople) {
+                        curr.currNumPeople ++;
+                        break;
+                    }
+                }
+                return curr;
+            }
+
+            function getRandomWalkPair() {
+                var [currRes, currWork] = walkPairs[0];
+                while(true) {
+                    [currRes, currWork] = walkPairs[Math.floor(Math.random()*walkPairs.length)];
+                    if (currRes.currNumPeople < currRes.numPeople && currWork.currNumPeople < currWork.numPeople) {
+                        currRes.currNumPeople ++;
+                        currWork.currNumPeople ++;
+                        break;
+                    }
+                }
+                return [currRes, currWork];
+            }
+
+            function getResWork(){
+                var currRes = getRandomBuilding(resList);
+                var currWork = getRandomBuilding(workList);
+                return [currRes, currWork];
             }
 
             function renewBlock () {
@@ -197,6 +346,7 @@
                         }
                     }
                 }
+
                 for (var b = 0; b < bus.length; b++) {
                     if (!bus[b].arrived && bus[b].spawn_time < time) {
                         var i = bus[b].x_init;
@@ -206,8 +356,60 @@
                         ctx.fillRect(i*block_width,(j+0.45)*block_height,block_width,0.1*block_height);
                     }
                 }
+
+                //drawing main, very stupid
+                if (mainMethodNum == 1){
+                    var currMain = cars[0];
+                    console.log("yes");
+                    var i = currMain.x_init;
+                    var j = currMain.y_init;
+                    ctx.fillStyle = '#00ff00';
+                    ctx.fillRect(i*block_width,j*block_width,1*block_width,1*block_width);
+                }
+
+                if (mainMethodNum == 2){
+                    var currMain = bus[0];
+                    console.log("yes");
+                    var i = currMain.x_init;
+                    var j = currMain.y_init;
+                    ctx.fillStyle = '#00ff00';
+                    ctx.fillRect(i*block_width,j*block_width,1*block_width,1*block_width);
+                }
+
+                if (mainMethodNum == 3){
+                    var currMain = walk[0];
+                    console.log("yes");
+                    var i = currMain.x_init;
+                    var j = currMain.y_init;
+                    ctx.fillStyle = '#00ff00';
+                    ctx.fillRect(i*block_width,j*block_width,1*block_width,1*block_width);
+                }
+
+                //display buildings
+                for (var b = 0; b < workList.length; b++) {
+                    var i = workList[b].x;
+                    var j = workList[b].y;
+                    ctx.fillStyle = '#FF1493';
+                    ctx.fillRect((i+0.45)*block_width,j*block_height,0.1*block_width,block_height);
+                    ctx.fillRect(i*block_width,(j+0.45)*block_height,block_width,0.1*block_height);
+                    
+                }
             }
 
+            function deleteBuildings() {
+                for (var b = 0; b < workList.length; b++) {
+                    var i = workList[b].x;
+                    var j = workList[b].y;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect((i+0.45)*block_width,j*block_height,0.1*block_width,block_height);
+                    ctx.fillRect(i*block_width,(j+0.45)*block_height,block_width,0.1*block_height);
+                    
+                }
+            }
+            function findMainBuildings(){
+                return [resList[0], workList[0]];
+            }
+            
             function init (){
                 time = 0;
                 cars = [];
@@ -219,18 +421,44 @@
                 busper = busperButton.value;
                 walkper = walkperButton.value;
                 renewBlock();
-                for(var c = 0; c < Math.floor(population * carper / 100); c++) {
-                    const driver = new Car();
-                    cars.push(driver);
+
+                deleteBuildings();
+                getResList();
+                getWorkList();
+                getWalkingDistancePairs();
+
+                if (mainMethodNum == 3) {
+                    const mainChar = new Walk(true);
+                    walk.push(mainChar);
                 }
-                for(var c = 0; c < Math.floor(population * busper / 100 / 40); c++) {
-                    const busDriver = new Bus();
-                    bus.push(busDriver);
+
+                if (mainMethodNum == 1) {
+                    const mainChar = new Car(true);
+                    cars.push(mainChar);
                 }
+
+                if (mainMethodNum == 2) {
+                    const mainChar = new Bus(true);
+                    walk.push(mainChar);
+                }
+
                 for(var c = 0; c < Math.floor(population * walkper / 100); c++) {
                     const walker = new Walk();
                     walk.push(walker);
                 }
+                
+
+                for(var c = 0; c < Math.floor(population * carper / 100); c++) {
+                    const driver = new Car();
+                    cars.push(driver);
+                }
+                
+                for(var c = 0; c < Math.floor(population * busper / 100 / 40); c++) {
+                    const busDriver = new Bus();
+                    bus.push(busDriver);
+                }
+                
+                
             }
 
             function terminate() {
@@ -353,7 +581,17 @@
                         if (walk.length != 0) {
                             averageWalk.innerText = parseFloat(findWalkCommuteTime()).toFixed(2);
                         } else {
+                            console.log("wtf");
                             averageWalk.innerText = "N/A";
+                        }
+                        if (mainMethodNum == 1) {
+                            mainTime.innerText = parseFloat((cars[0]).commute_time).toFixed(2);
+                        }
+                        if (mainMethodNum == 2) {
+                            mainTime.innerText = parseFloat((bus[0]).commute_time).toFixed(2);
+                        }
+                        if (mainMethodNum == 3) {
+                            mainTime.innerText = parseFloat((walk[0]).commute_time).toFixed(2);
                         }
                         drawGraph();
                         clearInterval(intervalId);
